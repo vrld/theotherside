@@ -251,7 +251,7 @@ function ManPac:draw()
 	local phi = (1 - 2 * math.abs((self.wacca % 1) - .5)) * math.pi/4
 
 	local rot
-	if self.direction.x == 1 then
+	if not self.direction or self.direction.x == 1 then
 		rot = 0
 	elseif self.direction.x == -1 then
 		rot = math.pi
@@ -373,7 +373,9 @@ function ManPac:update(dt)
 		self.direction = self.path[1][1]
 	end
 
-	walk(self, self.direction, dt)
+	if self.direction then
+		walk(self, self.direction, dt)
+	end
 end
 
 -- the game
@@ -425,8 +427,8 @@ j^^^^^^^^^^^^^^^^^^^^^^^^^^k
 <.UNNI.UNNNI.UI.UNNNI.UNNI.>
 <..........................>
 <.7NN8.78.7NNNNNN8.78.7NN8.>
-<.UNNI.||.UNNNNNNI.||.UNNI.>
-<......||....78....||......>
+<.UNNI.||.UNN87NNI.||.UNNI.>
+<......||....||....||......>
 u____s.|UNN8 || 7NNI|.a____i
      <.|7NNI UI UNN8|.>     
      <.||          ||.>     
@@ -510,7 +512,7 @@ function st:update(dt)
 	manpac:update(dt)
 
 	if Level.pills <= 0 then
-		GS.transition(State.menu, .5)
+		GS.transition(State.you_won, .5)
 	end
 end
 

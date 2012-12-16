@@ -339,7 +339,7 @@ Image.manpac.walls = {
 }
 
 Image.invaders = {}
-Image.invaders.bullet = bitmap{
+Image.invaders.shot = bitmap{
 	"p  p",
 	"e  e",
 	" ww ",
@@ -348,7 +348,7 @@ Image.invaders.bullet = bitmap{
 	"w  w"
 }
 
-Image.invaders.defender = bitmap{
+Image.invaders.hero = bitmap{
 	"       T       ",
 	"      HIS      ",
 	"  _GUY_IS_THE  ",

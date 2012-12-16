@@ -39,7 +39,7 @@ function st:update(dt)
 	gui.group.push{grow = "down", size = {400,40}, spacing = 5, pos = {(W-400)/2, H-200}}
 	if gui.Button{text = "Start"} then
 		Sound.static.select:play()
-		GS.transition(State.manpac)
+		GS.transition(State.tutorial, 1, "earth defenders", State.invaders)
 	end
 	if gui.Button{text = "Credits"} then
 		Sound.static.select:play()

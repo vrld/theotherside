@@ -2,6 +2,7 @@ class_commons = true
 class      = require 'hump.class'
 Timer      = require 'hump.timer'
 vector     = require 'hump.vector'
+Camera     = require 'hump.camera'
 GS         = require 'hump.gamestate'
 Collider   = require 'HardonCollider'
 Interrupt  = require 'interrupt'
@@ -77,7 +78,11 @@ function table.copy(t)
 end
 
 State = Proxy(function(path) return require('states.' .. path) end)
-Image = Proxy(function(path) return love.graphics.newImage('img/'..path..'.png') end)
+Image = Proxy(function(path)
+	local i = love.graphics.newImage('img/'..path..'.png')
+	i:setFilter('nearest', 'nearest')
+	return i
+end)
 Font  = Proxy(function(arg)
 	if tonumber(arg) then
 		return love.graphics.newFont(arg)
@@ -160,17 +165,44 @@ function love.load()
 			distort = exp(distort) * .002;
 			tc.x += distort;
 
-			// gamma "correction"
-			color = Texel(tex, tc);
-			color.rgb = pow(color.rgb, vec3(.7));
-
 			// make it hipster
 			float grain = rand(vec2(t,t*.2)+tc);
 			vec2 d = (tc -vec2(.5));
 			float vignette = mix(1. - length(d), 1., .6);
-			return mix(color, vec4(grain), .1) * vignette * vec4(1.,.99,.8,1.);
+			return mix(Texel(tex,tc), vec4(grain), .1) * vignette * vec4(1.,.99,.9,1.);
 		}
 		]]
+
+		local effects = {
+			[State.invaders] = love.graphics.newPixelEffect[[
+			vec4 effect(vec4 color, Image tex, vec2 tc, vec2 sc)
+			{
+				// green tint
+				float white = mix(smoothstep(.2,.32, tc.y), 1., .65);
+				color = Texel(tex, tc) * vec4(white, 1., white, 1.);
+
+				// gamma "correction"
+				color.rgb = pow(color.rgb, vec3(.8));
+				return color;
+			}]],
+			[State.manpac] = love.graphics.newPixelEffect[[
+			vec4 effect(vec4 color, Image tex, vec2 tc, vec2 sc)
+			{
+				// gamma "correction"
+				color = Texel(tex, tc);
+				color.rgb = pow(color.rgb, vec3(.7));
+				return color;
+			}
+			]],
+			[State.canabalt] = love.graphics.newPixelEffect[[
+			vec4 effect(vec4 color, Image tex, vec2 tc, vec2 sc)
+			{
+				color = Texel(tex, tc);
+				color.rgb *= vec3(.9,.9,1.1);
+				return color;
+			}
+			]],
+		}
 
 		local t = 0
 		local draw = GS.draw
@@ -179,9 +211,8 @@ function love.load()
 			canvas:clear()
 			love.graphics.setPixelEffect()
 			love.graphics.setCanvas(canvas)
-			love.graphics.setColor(0,0,0)
-			love.graphics.rectangle('fill', 0,0,W,H)
 			love.graphics.setColor(255,255,255)
+			love.graphics.draw(Image.bg_gradient,0,0)
 			draw()
 
 			love.graphics.setPixelEffect(blur_vert)
@@ -190,9 +221,16 @@ function love.load()
 			love.graphics.setPixelEffect(blur_horiz)
 			love.graphics.draw(canvas)
 
+			local E = effects[GS.current()]
+			if E then
+				love.graphics.setPixelEffect(E)
+				love.graphics.draw(canvas)
+			end
+
 			love.graphics.setCanvas()
 			rest_effect:send('t', t)
 			love.graphics.setPixelEffect(rest_effect)
+
 			love.graphics.draw(canvas)
 			love.graphics.setPixelEffect()
 		end
@@ -214,6 +252,8 @@ function love.load()
 		local draw = GS.draw
 		function GS.draw()
 			love.graphics.setBlendMode('alpha')
+			love.graphics.setColor(255,255,255)
+			love.graphics.draw(Image.bg_gradient,0,0)
 			draw()
 			love.graphics.setBlendMode('additive')
 			love.graphics.setColor(255,255,255,40)
@@ -223,6 +263,13 @@ function love.load()
 			love.graphics.setBlendMode('subtractive')
 			love.graphics.drawq(noise, noise_quad, 0,0,0,1,1, math.random(0,W), math.random(0,H))
 			love.graphics.draw(vignette, 0,0)
+
+			if GS.current() == State.invaders then
+				love.graphics.setBlendMode('multiplicative')
+				love.graphics.setColor(100,255,100)
+				love.graphics.rectangle('fill', 0,H*.75,W,H*.25)
+				love.graphics.setBlendMode('alpha')
+			end
 		end
 	end
 
@@ -230,7 +277,8 @@ function love.load()
 	--GS.switch(State.splash)
 	--GS.switch(State.menu)
 	--GS.switch(State.manpac)
-	GS.switch(State.invaders)
+	--GS.switch(State.invaders)
+	GS.switch(State.canabalt)
 end
 
 function love.update(dt)
