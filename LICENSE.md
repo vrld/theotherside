@@ -34,8 +34,10 @@ Third party software:
 
 "LÖVE", http://love2d.org, see love-license.txt
 
+"anim8", Enrique García, see anim8-license.txt
+
 
 Third party assets:
 ===================
 
-Font "silkscreen" by Jason Kotte, see silkscreen-license.txt
+Font "silkscreen", Jason Kotte, see silkscreen-license.txt

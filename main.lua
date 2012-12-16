@@ -5,7 +5,24 @@ vector     = require 'hump.vector'
 GS         = require 'hump.gamestate'
 HC         = require 'HardonCollider'
 Interrupt  = require 'interrupt'
+anim8      = require 'anim8'
 require 'slam'
+
+do
+	local vm = getmetatable(vector())
+
+	function vm.floor(v)
+		return vector(math.floor(v.x), math.floor(v.y))
+	end
+
+	function vm.round(v)
+		return vector(math.floor(v.x+.5), math.floor(v.y+.5))
+	end
+
+	function vm.minCoord(v)
+		return math.min(v.x, v.y)
+	end
+end
 
 function GS.transition(to, length, ...)
 	length = length or 1
@@ -40,6 +57,7 @@ end
 -- minimum frame rate
 local up = GS.update
 GS.update = function(dt)
+	if love.keyboard.isDown('1') then dt = dt / 10 end
 	return up(math.min(dt, 1/30))
 end
 
@@ -49,6 +67,13 @@ local function Proxy(f)
 		t[k] = v
 		return v
 	end})
+end
+
+-- shallow copy of the table
+function table.copy(t)
+	local r = {}
+	for k,v in pairs(t) do r[k] = v end
+	return r
 end
 
 State = Proxy(function(path) return require('states.' .. path) end)
@@ -69,10 +94,16 @@ function Set(t)
 	for _,k in ipairs(t) do
 		s[k] = k
 	end
-	return s
+	return pairs(s)
+end
+
+function you_lose()
+	GS.switch(State['you-loose'])
 end
 
 function love.load()
+	require 'bitmaps'
+
 	-- make the menu sounds
 	local len = 0.1
 	local attack, release = 0.1 * len, 0.9 * len
@@ -129,13 +160,15 @@ function love.load()
 			distort = exp(distort) * .002;
 			tc.x += distort;
 
+			// gamma "correction"
 			color = Texel(tex, tc);
+			color.rgb = pow(color.rgb, vec3(.7));
 
 			// make it hipster
 			float grain = rand(vec2(t,t*.2)+tc);
 			vec2 d = (tc -vec2(.5));
-			float vignette = mix(1. - length(d), 1., .4);
-			return mix(color, vec4(grain), .09) * vignette * vec4(1.,.99,.8,1.);
+			float vignette = mix(1. - length(d), 1., .6);
+			return mix(color, vec4(grain), .1) * vignette * vec4(1.,.99,.8,1.);
 		}
 		]]
 
@@ -194,9 +227,9 @@ function love.load()
 	end
 
 	GS.registerEvents()
-	GS.switch(State.splash)
+	--GS.switch(State.splash)
 	--GS.switch(State.menu)
-	--GS.switch(State.manpac)
+	GS.switch(State.manpac)
 end
 
 function love.update(dt)

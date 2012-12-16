@@ -7,9 +7,10 @@ local title = 'CREDITS'
 local title_width, title_height
 
 local credits = {
-	{"game design and code", "matthias richter // vrld.org"},
-	{"made with L:OVE",      "pimp inc. // love2d.org"},
-	{"font `silkscreen'",    "jason kotte // kotte.org"}
+	{"game design and code",      "matthias richter // vrld.org"},
+	{"made with L:OVE",           "pimp inc. // love2d.org"},
+	{"with the help of anim8",    "enrique garcia // github.com/kikito"},
+	{"and the font `silkscreen'", "jason kotte // kotte.org"},
 }
 
 function st:enter(pre)
