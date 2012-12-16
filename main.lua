@@ -3,7 +3,7 @@ class      = require 'hump.class'
 Timer      = require 'hump.timer'
 vector     = require 'hump.vector'
 GS         = require 'hump.gamestate'
-HC         = require 'HardonCollider'
+Collider   = require 'HardonCollider'
 Interrupt  = require 'interrupt'
 anim8      = require 'anim8'
 require 'slam'
@@ -98,7 +98,7 @@ function Set(t)
 end
 
 function you_lose()
-	GS.switch(State['you-loose'])
+	GS.switch(State['you-lose'])
 end
 
 function love.load()
@@ -229,7 +229,8 @@ function love.load()
 	GS.registerEvents()
 	--GS.switch(State.splash)
 	--GS.switch(State.menu)
-	GS.switch(State.manpac)
+	--GS.switch(State.manpac)
+	GS.switch(State.invaders)
 end
 
 function love.update(dt)
