@@ -62,7 +62,7 @@ local function shoot(dir, x,y)
 	s.dy = dir * 200
 	s.type = 'shot'
 	shots[s] = s
-	-- TODO: play sound
+	Sound.static.shot:play()
 	return s
 end
 
@@ -111,9 +111,11 @@ function st:enter(prestate)
 			p:start()
 			particlesys[p] = p
 			Timer.do_for(.2, function(dt) p:update(dt) end, function() particlesys[p] = nil end)
-			end
+		end
 		HC:remove(a,b)
 		shots[b] = nil
+
+		Sound.static.explode:play()
 
 		if naliens <= 0 then
 			GS.transition(State.won, 1)

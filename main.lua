@@ -134,7 +134,7 @@ function love.load()
 
 		sample = math.sin(t * 1100 * math.pi * 2) * .75
 		sample = sample + math.sin(t * 1000 * math.pi * 2) * .5
-		sample = sample * env * .2
+		sample = sample * env * .15
 		switch:setSample(i, sample)
 
 		sample = math.sin(t * 300 * math.pi * 2) * .75
@@ -297,4 +297,38 @@ end
 
 function love.update(dt)
 	Timer.update(dt)
+end
+
+function love.keypressed(key)
+	local c = GS.current()
+	if not (c == State.manpac or c == State.canabalt or c == State.invaders) then
+		return
+	end
+	if key == 'escape' then
+		local continue
+		continue = Interrupt{
+			draw = function(draw)
+				local W = love.graphics.getWidth()
+				local H = love.graphics.getHeight()
+				draw()
+				love.graphics.setColor(0,0,0,200)
+				love.graphics.rectangle('fill', 0,0,W,H)
+
+				love.graphics.setColor(255,255,255)
+				love.graphics.setFont(Font.slkscr[70])
+				love.graphics.printf("PAUSE", 0,H/2-50,W, 'center')
+				love.graphics.setFont(Font.slkscr[30])
+				love.graphics.printf("escape to go to menu", 0,H/2+30,W, 'center')
+				love.graphics.printf("space to continue", 0,H/2+70,W, 'center')
+			end, update = function() end,
+			keypressed = function(_,key)
+				if key == 'escape' then
+					GS.switch(State.menu)
+					continue()
+				elseif key == ' ' then
+					continue()
+				end
+			end,
+		}
+	end
 end

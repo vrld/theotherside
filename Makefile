@@ -5,5 +5,5 @@ all: test
 test:
 	love .
 
-love: *.lua */*.lua font/*.ttf img/*.png snd/*
-	zip the-other-side.love $^
+love: *.lua */*.lua font/*.ttf img/* snd/*
+	zip the-other-side.love "$^"

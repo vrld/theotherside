@@ -325,22 +325,25 @@ function ManPac:update(dt)
 	self.wacca = self.wacca + dt * math.pi * 1.5
 
 	local cell = Level.cell(self.pos)
-	if cell.steroids and Ghost.mode ~= frightened then
+	if cell.steroids and Ghost.mode ~= 'frightened' then
 		local mode = Ghost.mode
 		local toggle_timer = Ghost.toggle_timer
 		local speed = Ghost.speed
 		Ghost.mode = 'frightened'
 		Ghost.toggle_timer = {update = function() end}
 		Ghost.speed = Ghost.speed * .6
+		Sound.static.ghostly:play()
+		Sound.static.ghostly:setLooping(true)
 		Timer.add(10, function()
 			Ghost.mode = mode
 			Ghost.toggle_timer = Ghost.toggle_timer
 			Ghost.speed = speed
+			Sound.static.ghostly:stop()
 		end)
 	end
 
 	if cell.pill then
-		-- TODO: play sound
+		Sound.static.pill:play()
 		cell.pill = false
 		cell.steroids = false
 		cell.draw = function() end
@@ -351,7 +354,6 @@ function ManPac:update(dt)
 		local dist = g.pos:dist(self.pos)
 		local hit = dist < 1
 		if hit and g.mode == 'frightened' then
-			-- TODO: play sound
 			g.undead_but_dead = true
 			local s = 0
 			local init = g.pos:clone()
@@ -363,7 +365,6 @@ function ManPac:update(dt)
 				g.undead_but_dead = false
 			end)
 		elseif hit then
-			-- TODO: play sound
 			you_lose()
 			return
 		end

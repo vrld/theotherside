@@ -13,9 +13,15 @@ function st:init()
 
 	bg_quad = love.graphics.newQuad(0,0,100*800,600,800,600)
 	Image.city:setWrap('repeat','repeat')
+		Sound.stream.canabalt:setLooping(true)
 end
 
-function st:enter()
+function st:enter(pre)
+	if pre == State.tutorial then
+		Sound.stream.canabalt:stop()
+		Sound.stream.canabalt:play()
+		Sound.stream.canabalt:setVolume(1)
+	end
 	cam = Camera()
 	HC = Collider(100, function(_,a,b,dx,dy)
 		hero.vel.y = math.max(0, hero.vel.y)
@@ -47,9 +53,19 @@ function st:enter()
 	tgoal = 45
 end
 
+function st:leave()
+end
+
 function st:update(dt)
 	tgoal = tgoal - dt
 	if tgoal <= 0 then
+		local t = .5
+		Timer.do_for(.5, function(dt)
+			t = t - dt
+			Sound.stream.canabalt:setVolume(t/.5)
+		end, function()
+			Sound.stream.canabalt:stop()
+		end)
 		GS.transition(State.won, 1)
 		return
 	end
