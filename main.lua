@@ -106,8 +106,21 @@ function you_lose()
 	GS.switch(State['you-lose'])
 end
 
+DONE = {false, false, false}
+function love.quit()
+	local f = love.filesystem.newFile('status.lua')
+	f:open('w')
+	local t = DONE
+	for i = 1,#t do t[i] = tostring(t[i]) end
+	f:write("return {" .. table.concat(t, ',') .. "}")
+end
+
 function love.load()
 	require 'bitmaps'
+
+	if love.filesystem.exists('status.lua') then
+		DONE = assert(love.filesystem.load('status.lua')())
+	end
 
 	-- make the menu sounds
 	local len = 0.1
@@ -121,12 +134,12 @@ function love.load()
 
 		sample = math.sin(t * 1100 * math.pi * 2) * .75
 		sample = sample + math.sin(t * 1000 * math.pi * 2) * .5
-		sample = sample * env * .1
+		sample = sample * env * .2
 		switch:setSample(i, sample)
 
 		sample = math.sin(t * 300 * math.pi * 2) * .75
 		sample = sample + math.sin(t * 200 * math.pi * 2) * .5
-		sample = sample * env * .1
+		sample = sample * env * .2
 		select:setSample(i, sample)
 	end
 	Sound.static.select = love.audio.newSource(select, 'static')
@@ -274,11 +287,12 @@ function love.load()
 	end
 
 	GS.registerEvents()
-	--GS.switch(State.splash)
+	GS.switch(State.splash)
 	--GS.switch(State.menu)
 	--GS.switch(State.manpac)
 	--GS.switch(State.invaders)
-	GS.switch(State.canabalt)
+	--GS.switch(State.canabalt)
+	--GS.switch(State.selection)
 end
 
 function love.update(dt)

@@ -125,7 +125,7 @@ function Ghost:draw(i, is_player_controlled)
 	local x,y = Level.screencoords(self.pos):unpack()
 
 	if self.mode == 'frightened' then
-		love.graphics.setColor(10,20,200)
+		love.graphics.setColor(80,90,255)
 	else
 		love.graphics.setColor(Ghost.color[i])
 	end
@@ -136,7 +136,13 @@ function Ghost:draw(i, is_player_controlled)
 			x+7, y - self.center.y * 4,
 			x,   y - self.center.y * 4 + 10)
 	end
-	self.anim:draw(Image.manpac.ghost, x,y, 0, self.scale.x, self.scale.y, self.center:unpack())
+
+	if self.undead_but_dead then
+		love.graphics.circle('fill', x-7,y-10, 5)
+		love.graphics.circle('fill', x+7,y-10, 5)
+	else
+		self.anim:draw(Image.manpac.ghost, x,y, 0, self.scale.x, self.scale.y, self.center:unpack())
+	end
 
 	--if self.target then
 	--	local tx,ty = Level.screencoords(self.target):unpack()
@@ -166,7 +172,10 @@ function Ghost:updatePlayer(dt)
 		dy = 1
 	end
 
+	local speed = self.speed
+	self.speed = self.speed * 1.2
 	walk(self, vector(dx,dy), dt)
+	self.speed = speed
 end
 
 local function find_direction(self)
@@ -316,7 +325,7 @@ function ManPac:update(dt)
 	self.wacca = self.wacca + dt * math.pi * 1.5
 
 	local cell = Level.cell(self.pos)
-	if cell.steroids then
+	if cell.steroids and Ghost.mode ~= frightened then
 		local mode = Ghost.mode
 		local toggle_timer = Ghost.toggle_timer
 		local speed = Ghost.speed
@@ -512,7 +521,7 @@ function st:update(dt)
 	manpac:update(dt)
 
 	if Level.pills <= 0 then
-		GS.transition(State.you_won, .5)
+		GS.transition(State.won, 1)
 	end
 end
 
@@ -526,7 +535,7 @@ function st:draw()
 end
 
 function st:keypressed(key)
-	if key == 'tab' then
+	if key == ' ' or key == 'tab' then
 		ghosts.playercontrol = (ghosts.playercontrol % #ghosts) + 1
 	end
 end

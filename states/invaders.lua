@@ -116,7 +116,7 @@ function st:enter(prestate)
 		shots[b] = nil
 
 		if naliens <= 0 then
-			GS.transition(State.tutorial, 1, "jumping maniac", State.canabalt)
+			GS.transition(State.won, 1)
 		end
 	end)
 

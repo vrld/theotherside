@@ -2,7 +2,7 @@ function love.conf(t)
 	t.title             = "The other side"
 	t.author            = "vrld"
 	t.url               = "http://vrld.org/"
-	t.identity          = "SpaceOut"
+	t.identity          = "theotherside_ld25"
 	--t.release           = true
 
 	t.modules.physics   = false

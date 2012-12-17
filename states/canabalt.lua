@@ -13,7 +13,6 @@ function st:init()
 
 	bg_quad = love.graphics.newQuad(0,0,100*800,600,800,600)
 	Image.city:setWrap('repeat','repeat')
-	Image.wall:setWrap('repeat','repeat')
 end
 
 function st:enter()
@@ -51,7 +50,7 @@ end
 function st:update(dt)
 	tgoal = tgoal - dt
 	if tgoal <= 0 then
-		GS.transition(State.tutorial, 1, "man with cap", State.manpac)
+		GS.transition(State.won, 1)
 		return
 	end
 	anim:update(dt)
